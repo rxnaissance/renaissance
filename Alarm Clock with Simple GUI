@@ -1,0 +1,89 @@
+#----------------------------------------------------------------------------------------------------------------------
+#                                               OP ALARM CLOCK
+#----------------------------------------------------------------------------------------------------------------------
+#                                               by: Ren the Knub
+
+from tkinter import *
+import time
+import pygame
+
+pygame.mixer.init()
+pygame.mixer.music.load('H:\\Music\\GFRIEND\\Unknown album\\GFRIEND - GFRIEND - Fingertip.mp3')
+
+choice = input('Do you want to set an alarm? > ')
+
+
+root = Tk()
+time1 = ' '
+clock = Label(root, font = ('arial', 48, 'bold'), bg = 'white')
+clock.pack()
+
+def ticktock():
+    global time1
+    global time01
+    time01 = time.strftime("%H:%M:%S")
+    if time1 != time01:
+        time1 = time01
+        clock.config(text = time01)
+    clock.after(200,ticktock)
+    if alarm == time01:
+        wakeywakey()
+
+def ticktick():
+    global time1
+    global time01
+    time01 = time.strftime("%H:%M:%S")
+    if time1 != time01:
+        time1 = time01
+        clock.config(text = time01)
+    clock.after(200,ticktock)
+
+def tocktock():
+    global  time01
+    global sn00ze
+    sn00ze = sn00ze * 60
+    while sn00ze > 0:
+        sn00ze = sn00ze -1
+        time.sleep(1)
+        print(sn00ze)
+        if sn00ze == 0:
+            snoozeover()
+
+def wakeywakey():
+    pygame.mixer.music.play()
+
+def dismiss():
+    pygame.mixer.music.stop()
+    ticktick()
+
+def snooze():
+    pygame.mixer.music.pause()
+    ticktick()
+    global sn00ze
+    sn00ze = int(input('How much more sleep would you like? Enter in Minutes'))
+    tocktock()
+
+def snoozeover():
+    pygame.mixer.music.unpause()
+    ticktick()
+
+if choice == 'Yes':
+    global alarm
+    alarm = input('What time would you like to wake up? HH:MM:SS > ')
+    ticktock()
+elif choice == 'No':
+    alarm = '00:00:00'
+    ticktick()
+else:
+    print('Invalid Response')
+
+snoozebutton = Button(root, text='Snooze', command=snooze)
+snoozebutton.pack()
+
+dismissbutton = Button(root, text = 'Dismiss Alarm', command = dismiss)
+dismissbutton.pack()
+
+root.attributes('-topmost', 1)
+root.update()
+root.attributes('-topmost', 0)
+root.mainloop()
