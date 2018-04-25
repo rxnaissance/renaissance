@@ -1,0 +1,159 @@
+import os
+from tkinter.filedialog import askdirectory
+
+import pygame
+from mutagen.id3 import ID3
+from tkinter import *
+from PIL import Image, ImageTk
+
+root = Tk()
+root.minsize(250, 75)
+root.iconbitmap('Headphones Play Music.ico')
+root.title('Py PY Music Player')
+
+listofsongs = []
+realnames = []
+
+v = StringVar()
+songlabel = Label(root, textvariable=v, width=35, font = ('Adobe Gothic STD B', 10))
+songlabel.pack()
+
+
+top = Frame(root)
+top.pack()
+bottom = Frame(root)
+bottom.pack(side = BOTTOM)
+left = Frame(root)
+left.pack(side = LEFT)
+right = Frame(root)
+right.pack(side = RIGHT)
+
+index = 0
+#pop = 0
+mutte = 0
+lessvolume = 0
+
+pic = "lol.jpg"
+ture = Image.open(pic)
+pix = ture.resize((200, 75),Image.ANTIALIAS)
+img = ImageTk.PhotoImage(pix)
+banner = Label(root, image = img)
+banner.pack()
+
+def updatelabel():
+    global index
+    global songname
+    v.set(realnames[index])
+    # return songname
+
+def directorychooser():
+    directory = askdirectory()
+    os.chdir(directory)
+
+    for files in os.listdir(directory):
+        if files.endswith(".mp3"):
+            realdir = os.path.realpath(files)
+            audio = ID3(realdir)
+            realnames.append(audio['TIT2'].text[0])
+
+            listofsongs.append(files)
+
+    pygame.mixer.init()
+    pygame.mixer.music.load(listofsongs[0])
+    pygame.mixer.music.play()
+    updatelabel()
+
+directorychooser()
+
+def reverse(event):
+    global index
+    index = 0
+    pygame.mixer.music.load(listofsongs[index])
+    pygame.mixer.music.play()
+    updatelabel()
+
+def pausesong(event):
+    pygame.mixer.music.pause()
+    updatelabel()
+
+def playsong(event):
+    pygame.mixer.music.unpause()
+    updatelabel()
+
+def nextsong(event):
+    global index
+    index += 1
+    if index == len(listofsongs):
+        reverse(event)
+    pygame.mixer.music.load(listofsongs[index])
+    pygame.mixer.music.play()
+    updatelabel()
+
+
+def prevsong(event):
+    global index
+    index -= 1
+    pygame.mixer.music.load(listofsongs[index])
+    pygame.mixer.music.play()
+    updatelabel()
+
+
+def stopsong(event):
+    pygame.mixer.music.stop()
+    v.set("")
+    # return songname
+
+def mute(event):
+    global mutte
+    global lessvolume
+    lessvolume = pygame.mixer.music.get_volume()
+    mutte = lessvolume-.5
+    pygame.mixer.music.set_volume(mutte)
+
+def unmute(event):
+    global mutte
+    global lessvolume
+    lessvolume = pygame.mixer.music.get_volume()
+    mutte = lessvolume+.5
+    pygame.mixer.music.set_volume(mutte)
+
+label = Label(root, text='♬ MYP MYP PLAYER ♬', font=('Adobe Gothic STD B', 18))
+label.pack()
+
+
+blah1 = Label(root, text = '                    ')
+blah1.pack(side = 'left')
+blah2 = Label(root, text = '                    ')
+blah2.pack(side = 'right')
+
+previousbutton = Button( root, text=' ⏮')
+previousbutton.pack(pady= 5, side = 'left', fill = X)
+
+nextbutton = Button(root, text='⏭')
+nextbutton.pack(pady= 5, side = 'right', fill = X)
+
+pausebutton = Button(root, text= '⏸')
+pausebutton.pack(side = 'left', fill = X)
+
+stopbutton = Button(root, text='◼')
+stopbutton.pack(side = 'right', fill = X)
+
+mutebutton = Button(root, text = '▼')
+mutebutton.pack(side='right', fill = X)
+
+unmutebutton = Button(root, text= '▲')
+unmutebutton.pack(side='left', fill = X)
+
+playbutton= Button(root, text = '►')
+playbutton.pack(pady = 5, side = 'bottom')
+
+
+nextbutton.bind("<Button-1>", nextsong)
+previousbutton.bind("<Button-1>", prevsong)
+stopbutton.bind("<Button-1>", stopsong)
+pausebutton.bind("<Button-1>", pausesong)
+playbutton.bind("<Button-1>", playsong)
+mutebutton.bind("<Button-1>", mute)
+unmutebutton.bind("<Button-1>", unmute)
+
+root.mainloop()
