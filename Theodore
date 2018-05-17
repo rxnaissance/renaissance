@@ -1,0 +1,46 @@
+from tkinter import *
+from google import search
+import webbrowser
+import os
+
+global x #set 'x' as a global variable
+#songName = ''
+root = Tk()
+root.minsize(300,50)
+root.iconbitmap('Headphones Play Music.ico')
+root.title('Theodore the Musician')
+
+searchKeywords = StringVar()
+
+userKeywords = Entry(root, textvariable = searchKeywords, bd = 5).grid(row = 0, column = 2, sticky = E)
+
+
+def getvalue():
+    global songName
+    print(searchKeywords.get())
+
+
+def play(event):
+    songTitle = searchKeywords.get()
+    for url in search("site:youtube.com " + songTitle, tld='com', lang='en', num=1, start=0, stop=1):
+        #print(url)
+        x = webbrowser.open(url)
+
+
+def closeBrowser():
+    os.system("TASKKILL /F /IM microsoftedge.exe")
+
+def endProgram():
+    root.destroy()
+
+surf = Button(root, text = 'Search!')
+surf.grid(row = 0, column = 3)
+surf.bind("<Button-1>", play)
+
+importText = Button(root, text = 'Import Search Keywords', command = getvalue).grid(row= 1, column = 1, sticky = W)
+instructions = Label(root, text = 'Song Title',).grid(row = 0, column = 1)
+close = Button(root, text = 'Close Browser', command = closeBrowser).grid(row = 1, column = 2)
+end = Button(root, text = 'Close Program', command = endProgram).grid(row = 1, column =3 )
+
+
+root.mainloop()
